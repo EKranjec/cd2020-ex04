@@ -34,4 +34,3 @@ jobs:
         REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
       run: |
         docker push $REGISTRY_USER/demo:latest
-        docker push $REGISTRY_USER/demo:$GIT_SHA
