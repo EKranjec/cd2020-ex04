@@ -1,0 +1,41 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      run: docker build . --file Dockerfile --tag $REGISTRY_USER/demo:latest
+    - name: Tag the Docker image
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      run: | 
+          GIT_SHA="$(git rev-parse --short HEAD)"
+          docker tag $REGISTRY_USER/demo:latest $REGISTRY_USER/demo:$GIT_SHA
+    - name: Login to Docker Hub
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+        REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      run: docker login --username $REGISTRY_USER --password $REGISTRY_PASSWORD
+    - name: Push Docker image tagged with "latest"
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      run: docker push $REGISTRY_USER/demo:latest
+    - name: Push Docker image tagged with GIT revision SHA
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      run: |
+        GIT_SHA="$(git rev-parse --short HEAD)"
+        docker push $REGISTRY_USER/demo:$GIT_SHA
