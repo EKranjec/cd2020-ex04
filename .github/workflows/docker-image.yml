@@ -29,8 +29,13 @@ jobs:
         REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
         REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
       run: docker login --username $REGISTRY_USER --password $REGISTRY_PASSWORD
-    - name: Push the Docker image
+    - name: Push Docker image tagged with "latest"
+      env:
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      run: docker push $REGISTRY_USER/demo:latest
+    - name: Push Docker image tagged with GIT revision SHA
       env:
         REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
       run: |
-        docker push $REGISTRY_USER/demo:latest
+        GIT_SHA="$(git rev-parse --short HEAD)"
+        docker push $REGISTRY_USER/demo:$GIT_SHA
