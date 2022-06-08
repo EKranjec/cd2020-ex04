@@ -38,7 +38,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: '${{ REGISTRY_USER }}/demo:latest'
+        image-ref: '${{ secrets.REGISTRY_USER }}/demo:latest'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
